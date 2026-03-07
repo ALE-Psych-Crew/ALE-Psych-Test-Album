@@ -1,0 +1,26 @@
+{
+	"songs": [
+		[
+			"OG",
+			"prealpha",
+			[
+				100,
+				100,
+				100
+			]
+		]
+	],
+	"weekCharacters": [
+		"dad",
+		"bf",
+		"gf"
+	],
+	"weekBackground": "stage",
+	"storyName": "Freeplay",
+	"weekBefore": "tutorial",
+	"weekName": "Freeplay",
+	"difficulties": "Normal",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"hideFreeplay": false
+}

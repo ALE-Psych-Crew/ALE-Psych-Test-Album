@@ -1,0 +1,88 @@
+{
+	"zoom": 0.6,
+	"speed": 1,
+	"hud": "default",
+	"characterOffset": {
+		"type": {
+			"opponent": {
+				"x": 100,
+				"y": 125
+			},
+			"player": {
+				"x": 900,
+				"y": 125
+			},
+			"extra": {
+				"x": 400,
+				"y": 130
+			}
+		}
+	},
+	"cameraOffset": {
+		"type": {
+			"opponent": {
+				"x": 100
+			},
+			"player": {
+				"x": -100,
+				"y": -50
+			}
+		}
+	},
+	"format": "ale-stage-v0.1",
+	"objectsConfig": {
+		"directory": "og",
+		"objects": [
+			{
+				"id": "sky",
+				"properties": {
+					"x": -700,
+					"y": -300,
+					"scrollFactor": {
+						"x": 0.2,
+						"y": 0.2
+					}
+				}
+			},
+			{
+				"id": "clouds",
+				"properties": {
+					"velocity": {
+						"x": 50,
+						"y": -25
+					},
+					"scrollFactor": {
+						"x": 0.25,
+						"y": 0.25
+					}
+				},
+				"classPath": "flixel.addons.display.FlxBackdrop"
+			},
+			{
+				"id": "window",
+				"properties": {
+					"x": -700,
+					"y": -600,
+					"scrollFactor": {
+						"x": 0.3,
+						"y": 0.3
+					}
+				}
+			},
+			{
+				"id": "ground",
+				"properties": {
+					"x": -900,
+					"y": 500
+				}
+			},
+			{
+				"id": "ceiling",
+				"properties": {
+					"x": -900,
+					"y": -900
+				}
+			}
+		]
+	}
+}
