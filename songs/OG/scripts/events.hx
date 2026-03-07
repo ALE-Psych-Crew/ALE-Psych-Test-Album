@@ -83,6 +83,7 @@ function onSongStart()
 
 var allowJump:Bool = false;
 
+var beatFunc:Int -> Void;
 var updateFunc:Float -> Void;
 var moveCameraFunc:Character -> Void;
 
@@ -225,7 +226,11 @@ function onSafeBeatHit(curBeat:Int)
         case 218:
             camGame.targetZoom = 0.5;
         case 220:
-            camGame.tweenZoom(0.9, Conductor.secCrochet * 4, {ease: FlxEase.cubeInOut});
+            camGame.tweenZoom(1.5, Conductor.secCrochet * 4, {ease: FlxEase.cubeInOut});
+
+            allowNoteCamera = false;
+
+            camGame.offset.y = 75;
         case 224:
             camGame.cancelZoomTween();
 
@@ -254,8 +259,9 @@ function onSafeBeatHit(curBeat:Int)
                     curChar = character;
                     
                     camGame.offset.x = curChar == dad ? 100 : -100;
+                    camGame.offset.y = curChar == dad ? -25 : 75;
 
-                    camGame.targetZoom = curChar == dad ? 0.8 : 1;
+                    camGame.targetZoom = curChar == dad ? 1 : 1.5;
                 }
             };
 
@@ -280,14 +286,31 @@ function onSafeBeatHit(curBeat:Int)
 
             camHUD.bopModulo = camGame.bopModulo = 0;
 
-            allowNoteCamera = false;
-
             moveCameraFunc = null;
             updateFunc = null;
+        case 272:
+            allowNoteCamera = true;
+            
+            beatFunc = (curBeat) -> {
+                if (curBeat % 2 == 1)
+                {
+                    shader.set({bloom: 1.25});
+
+                    shader.tween({bloom: 1}, Conductor.secCrochet * 2);
+                }
+            };
+        case 284:
+            camGame.targetZoom = 0.8;
+
+            beatFunc = null;
+        case 286:
     }
+
+    if (beatFunc != null)
+        beatFunc(curBeat);
 }
 
-//startTime = Conductor.beatsToTime(220);
+startTime = Conductor.beatsToTime(284);
 
 function onBeatHit(curBeat)
 {
