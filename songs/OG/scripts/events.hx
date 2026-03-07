@@ -287,7 +287,7 @@ function onSafeBeatHit(curBeat:Int)
     }
 }
 
-startTime = Conductor.beatsToTime(220);
+//startTime = Conductor.beatsToTime(220);
 
 function onBeatHit(curBeat)
 {
