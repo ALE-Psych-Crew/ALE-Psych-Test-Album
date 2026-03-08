@@ -1,13 +1,5 @@
 import flixel.text.FlxText.FlxTextBorderStyle;
 
-skipCountdown = true;
-
-final waterMark:FlxText = new FlxText(10, 0, 0, song + ' - ' + difficulty + '\nALE Psych ' + CoolVars.engineVersion);
-waterMark.setFormat(Paths.font('comicSans.ttf'), 17, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-waterMark.borderSize = 1.25;
-add(waterMark);
-waterMark.y = FlxG.height - waterMark.height - 10;
-
 function onHealthUpdate()
 {
     for (icon in icons)
@@ -50,6 +42,42 @@ function postNoteHit(note:Note, rating:String, character:Character)
     }
 }
 
+skipCountdown = true;
+
+final upBar:FlxSprite = new FlxSprite(0, -FlxG.height).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+add(upBar);
+
+final downBar:FlxSprite = new FlxSprite(0, FlxG.height).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+add(downBar);
+
+final waterMark:FlxText = new FlxText(10, 0, 0, song + ' - ' + difficulty + '\nALE Psych ' + CoolVars.engineVersion);
+waterMark.setFormat(Paths.font('comicSans.ttf'), 17, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+waterMark.borderSize = 1.25;
+add(waterMark);
+waterMark.y = FlxG.height - waterMark.height - 10;
+
+function coolBars(offset:Float, time:Float, ?ease:FlxEase, ?allowModchart:Bool)
+{
+    ease ??= FlxEase.cubeOut;
+    allowModchart ??= true;
+
+    FlxTween.cancelTweensOf(upBar);
+    FlxTween.cancelTweensOf(downBar);
+
+    FlxTween.tween(upBar, {y: offset - FlxG.height}, time, {ease: ease});
+    FlxTween.tween(downBar, {y: FlxG.height - offset}, time, {ease: ease});
+
+    if (allowModchart)
+    {
+        for (strl in strumLines)
+        {
+            FlxTween.cancelTweensOf(strl);
+
+            FlxTween.tween(strl, {y: ClientPrefs.data.downScroll ? (560 - offset) : (50 + offset)}, time, {ease: ease});
+        }
+    }
+}
+
 function postCreate()
 {
     comboGroup.setPosition(650, 500);
@@ -60,8 +88,6 @@ function postCreate()
     addBehindDad(comboGroup);
 
     scoreText.font = Paths.font('comicSans.ttf');
-
-    waterMark.cameras = [camOther];
 
     for (icon in icons)
     {
@@ -74,6 +100,9 @@ function postCreate()
     shader.set({red: 0.75, green: 0.75, blue: 0.9});
 
     botplay = startTime > 0;
+
+    for (obj in [waterMark, upBar, downBar])
+        obj.cameras = [camOther];
 }
 
 function onSongStart()
@@ -299,18 +328,31 @@ function onSafeBeatHit(curBeat:Int)
                     shader.tween({bloom: 1}, Conductor.secCrochet * 2);
                 }
             };
-        case 284:
-            camGame.targetZoom = 0.8;
 
+            camGame.tweenZoom(1.1, Conductor.secCrochet * 16);
+        case 284:
             beatFunc = null;
         case 286:
+            camGame.tweenZoom(0.5, Conductor.secCrochet * 2, {ease: FlxEase.cubeIn});
+        case 288:
+            shader.set({bloom: 3, red: 1, green: 1, blue: 1.25});
+
+            shader.tween({bloom: 1}, Conductor.secCrochet * 4);
+
+            camHUD.bopModulo = camGame.bopModulo = 1;
+            camHUD.zoomSpeed = camGame.zoomSpeed = 3;
+            camHUD.speed = camGame.speed = 3;
+        case 292:
+            coolBars(50, Conductor.secCrochet * 0.75);
+        case 296:
+            coolBars(0, Conductor.secCrochet * 0.75);
     }
 
     if (beatFunc != null)
         beatFunc(curBeat);
 }
 
-//startTime = Conductor.beatsToTime(284);
+startTime = Conductor.beatsToTime(292);
 
 function onBeatHit(curBeat)
 {
