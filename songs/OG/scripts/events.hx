@@ -22,7 +22,7 @@ function onNoteHit(note:Note, rating:String, character:Character)
 
 var allowNoteCamera:Bool = true;
 
-final CAM_OFFSET:Int = 20;
+var CAM_OFFSET:Int = 20;
 
 function postNoteHit(note:Note, rating:String, character:Character)
 {
@@ -99,10 +99,10 @@ function postCreate()
 
     shader.set({red: 0.75, green: 0.75, blue: 0.9});
 
-    botplay = startTime > 0;
-
     for (obj in [waterMark, upBar, downBar])
         obj.cameras = [camOther];
+
+    botplay = startTime > 0;
 }
 
 function onSongStart()
@@ -255,7 +255,7 @@ function onSafeBeatHit(curBeat:Int)
         case 218:
             camGame.targetZoom = 0.5;
         case 220:
-            camGame.tweenZoom(1.5, Conductor.secCrochet * 4, {ease: FlxEase.cubeInOut});
+            camGame.tweenZoom(1.3, Conductor.secCrochet * 4, {ease: FlxEase.cubeInOut});
 
             allowNoteCamera = false;
 
@@ -276,11 +276,13 @@ function onSafeBeatHit(curBeat:Int)
 
             var curChar:Character = boyfriend;
             
-            camGame.zoomSpeed = 2;
+            camGame.zoomSpeed = 20;
             
             camGame.speed = 25;
             
             stage.get('clouds').velocity.set(200, -100);
+
+            camGame.targetZoom = 1.3;
 
             moveCameraFunc = (character) -> {
                 if (curChar != character)
@@ -290,7 +292,7 @@ function onSafeBeatHit(curBeat:Int)
                     camGame.offset.x = curChar == dad ? 100 : -100;
                     camGame.offset.y = curChar == dad ? -25 : 75;
 
-                    camGame.targetZoom = curChar == dad ? 1 : 1.5;
+                    camGame.targetZoom = curChar == dad ? 1 : 1.3;
                 }
             };
 
@@ -299,13 +301,15 @@ function onSafeBeatHit(curBeat:Int)
             };
 
             camHUD.bopModulo = camGame.bopModulo = 0;
+
+            coolBars(100, Conductor.secCrochet);
         case 240:
             for (strl in strumLines)
                 for (index => strum in strl.strums.members)
                 {
                     FlxTween.cancelTweensOf(strum);
 
-                    FlxTween.tween(strum, {alpha: 1}, Conductor.secCrochet, {startDelay: index * Conductor.secCrochet * 4});
+                    FlxTween.tween(strum, {alpha: strl.type == 'opponent' ? 0.5 : 1}, Conductor.secCrochet, {startDelay: index * Conductor.secCrochet * 4});
                 }
         case 256:
             camGame.reset();
@@ -317,6 +321,8 @@ function onSafeBeatHit(curBeat:Int)
 
             moveCameraFunc = null;
             updateFunc = null;
+
+            coolBars(50);
         case 272:
             allowNoteCamera = true;
             
@@ -339,20 +345,64 @@ function onSafeBeatHit(curBeat:Int)
 
             shader.tween({bloom: 1}, Conductor.secCrochet * 4);
 
+            camGame.angle = 5;
+
+            camHUD.bopZoom = camGame.bopZoom = 2;
             camHUD.bopModulo = camGame.bopModulo = 1;
             camHUD.zoomSpeed = camGame.zoomSpeed = 3;
             camHUD.speed = camGame.speed = 3;
+
+            camGame.cancelZoomTween();
+            camGame.targetZoom = 0.8;
+
+            CAM_OFFSET = 15;
+
+            coolBars(100, Conductor.secCrochet);
+            
+            stage.get('clouds').velocity.set(500, -250);
         case 292:
-            coolBars(50, Conductor.secCrochet * 0.75);
+            shader.set({bloom: 1});
         case 296:
-            coolBars(0, Conductor.secCrochet * 0.75);
+            coolBars(50, Conductor.secCrochet);
+        case 303:
+            camHUD.bopModulo = camGame.bopModulo = 0;
+
+            camGame.tweenZoom(0.6, Conductor.secCrochet, {ease: FlxEase.cubeIn});
+
+            FlxTween.tween(camGame, {angle: 0}, Conductor.secCrochet, {ease: FlxEase.cubeIn});
+        case 304:
+            camHUD.bopModulo = camGame.bopModulo = 1;
+
+            coolBars(25, Conductor.secCrochet);
+            
+            shader.set({bloom: 2, red: 1, green: 1, blue: 1.25});
+
+            shader.tween({bloom: 1}, Conductor.secCrochet * 2);
+        case 306:
+            coolBars(50, Conductor.secCrochet / 2);
+        case 308:
+            camGame.targetZoom = 0.7;
+
+            coolBars(100, Conductor.secCrochet * 2, FlxEase.elasticOut);
+        case 312:
+            coolBars(50, Conductor.secCrochet * 2, FlxEase.elasticOut);
+        case 314:
+            camGame.targetZoom = 0.8;
+        case 315:
+            camGame.tweenZoom(0.6, Conductor.secCrochet, {ease: FlxEase.cubeIn});
+        case 316:
+            camGame.tweenZoom(0.8, Conductor.secCrochet * 4, {ease: FlxEase.cubeIn});
+        case 316:
+            camGame.cancelZoomTween();
+
+            camGame.targetZoom = 0.7;
     }
 
     if (beatFunc != null)
         beatFunc(curBeat);
 }
 
-startTime = Conductor.beatsToTime(292);
+startTime = Conductor.beatsToTime(284);
 
 function onBeatHit(curBeat)
 {
@@ -391,7 +441,7 @@ function onBeatHit(curBeat)
     }
 }
 
-function onCameraMove(character:Character)
+function postCameraMove(character:Character)
 {
     if (moveCameraFunc != null)
         moveCameraFunc(character);
